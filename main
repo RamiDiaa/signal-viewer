@@ -1,0 +1,242 @@
+
+
+
+
+
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
+# from PyQt5.QtGui import QIcon
+import pandas as pd
+import numpy as np
+from numpy.fft import fft,fftfreq,ifft
+import matplotlib.pyplot as plt
+# from matplotlib.animation import FuncAnimation
+from scipy.fftpack import fft
+# from itertools import count
+# import glob
+# import os
+# import csv
+
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(561, 439)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.b1 = QtWidgets.QPushButton(self.centralwidget)
+        self.b1.setGeometry(QtCore.QRect(20, 40, 75, 23))
+        self.b1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.b1.setObjectName("b1")
+        self.b2 = QtWidgets.QPushButton(self.centralwidget)
+        self.b2.setGeometry(QtCore.QRect(20, 90, 75, 23))
+        self.b2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.b2.setMouseTracking(False)
+        self.b2.setObjectName("b2")
+        self.openGLWidget = QtWidgets.QOpenGLWidget(self.centralwidget)
+        self.openGLWidget.setGeometry(QtCore.QRect(250, 10, 300, 200))
+        self.openGLWidget.setObjectName("openGLWidget")
+        self.check1 = QtWidgets.QCheckBox(self.centralwidget)
+        self.check1.setGeometry(QtCore.QRect(20, 140, 70, 17))
+        self.check1.setObjectName("check1")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(50, 270, 47, 13))
+        self.label.setObjectName("label")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 561, 21))
+        self.menubar.setObjectName("menubar")
+        self.menuopen = QtWidgets.QMenu(self.menubar)
+        self.menuopen.setObjectName("menuopen")
+        self.menuedit = QtWidgets.QMenu(self.menubar)
+        self.menuedit.setObjectName("menuedit")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+        self.actionnew = QtWidgets.QAction(MainWindow)
+        self.actionnew.setObjectName("actionnew")
+        self.actionopen = QtWidgets.QAction(MainWindow)
+        self.actionopen.setObjectName("actionopen")
+        self.actioncopy = QtWidgets.QAction(MainWindow)
+        self.actioncopy.setObjectName("actioncopy")
+        self.actionpaste = QtWidgets.QAction(MainWindow)
+        self.actionpaste.setObjectName("actionpaste")
+        self.actionnew_2 = QtWidgets.QAction(MainWindow)
+        self.actionnew_2.setShortcutContext(QtCore.Qt.WindowShortcut)
+        self.actionnew_2.setObjectName("actionnew_2")
+        self.menuopen.addAction(self.actionnew_2)
+        self.menuopen.addAction(self.actionopen)
+        self.menuedit.addAction(self.actioncopy)
+        self.menuedit.addAction(self.actionpaste)
+        self.menubar.addAction(self.menuopen.menuAction())
+        self.menubar.addAction(self.menuedit.menuAction())
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.b1.setText(_translate("MainWindow", "run"))
+        self.b2.setText(_translate("MainWindow", "browse"))
+
+        self.check1.setText(_translate("MainWindow", "grid"))
+        self.label.setText(_translate("MainWindow", "TextLabel"))
+
+        self.menuopen.setTitle(_translate("MainWindow", "file"))
+        self.menuedit.setTitle(_translate("MainWindow", "edit"))
+        self.actionnew.setText(_translate("MainWindow", "new"))
+
+        self.actionopen.setText(_translate("MainWindow", "open"))
+        self.actionopen.setShortcut(_translate("MainWindow", "Ctrl+O"))
+
+
+        self.actioncopy.setText(_translate("MainWindow", "copy"))
+        self.actioncopy.setShortcut(_translate("MainWindow", "Ctrl+C"))
+
+        self.actionpaste.setText(_translate("MainWindow", "paste"))
+        self.actionpaste.setShortcut(_translate("MainWindow", "Ctrl+V"))
+
+        self.actionnew_2.setText(_translate("MainWindow", "new"))
+        self.actionnew_2.setShortcut(_translate("MainWindow", "Ctrl+N"))
+
+        self.actioncopy.triggered.connect(lambda: self.clicked("copy"))
+        self.actionpaste.triggered.connect(lambda: self.clicked("pasting"))
+        self.actionnew_2.triggered.connect(lambda: self.clicked("opening a new one"))
+        #self.actionnew_2.triggered.connect(self.pushButton_handler())
+        self.b2.clicked.connect(self.pushButton_handler)
+
+    def clicked(self,text):
+        self.label.setText(text)
+        self.label.adjustSize()
+
+    def pushButton_handler(self):
+        print("Button pressed")
+        self.open_dialog_box()
+
+    def open_dialog_box(self):
+        filename = QFileDialog.getOpenFileName()
+        path = filename[0]
+        print(path)
+        self.file_open(path)
+
+
+        with open(path, "r") as f:
+            print(f.readline())
+
+    def file_open(self,path):
+        # fileName = QtWidgets.QFileDialog.getOpenFileName(Rule_Priority_test, 'Open csv', QtCore.QDir.rootPath(),
+        #                                                  'Violations_*.csv')
+        # df1 = pd.DataFrame()
+        # df1 = pd.concat([pd.read_csv(f) for f in glob.glob('Violations_*.csv')] , ignore_index=True)
+
+        df1 = pd.read_csv(path)
+        print("fu 2 works")
+        plt.figure(1)
+        plt.xlim(left=10,right=15)
+        plt.subplot(211)
+        plt.plot(df1)
+        plt.subplot(212)
+        plt.plot(fft(df1))
+        plt.show()
+
+
+
+        # y = np.array(df1)
+        # n = np.size(y)
+        # lx = 100
+        # x = np.linspace(0, lx, n)
+        # freqs = fftfreq(n)
+        # mask = freqs > 0
+        # fft_vals = fft(y)
+        # fft_theo = 2.0 * np.abs(fft_vals / n)
+        #
+        # plt.figure(1)
+        # plt.subplot(211)
+        # plt.plot(x, y)
+        # plt.subplot(212)
+        # plt.plot(freqs[mask], fft_theo[mask], label="true fft values")
+        # plt.show()
+
+
+
+
+
+        # x_vals = []
+        # y_vals = []
+        # index = count()
+        # def animate(i):
+        #
+        #     # time.sleep(.5)
+        #     n = next(index)
+        #     print(n)
+        #     x_vals.append(df1[n])
+        #     n = next(index)
+        #     y_vals.append(df1[n])
+        #     # plt.cla()
+        #     plt.plot(x_vals, y_vals)
+        #
+        #     plt.xlim(left=max(0, n - 50), right=n + 50)
+        #
+        # ani = FuncAnimation(plt.gcf(), animate, interval=50)
+        # plt.tight_layout()
+        # plt.show()
+
+
+
+
+
+
+
+
+
+        # df2 = pd.read_csv('C:\\Testing bat\\10000TXsData.csv')
+        # df = pd.merge(df2, df1, how='inner').dropna(axis="columns")
+        # model = PandasModel(df)
+        # self.tableView.setModel(model)
+
+
+
+
+
+
+
+    #
+    # def openFileNameDialog(self):
+    #     options = QFileDialog.Options()
+    #     options |= QFileDialog.DontUseNativeDialog
+    #     fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
+    #                                               "All Files (*);;Python Files (*.py)", options=options)
+    #     if fileName:
+    #         print(fileName)
+    #
+    # def openFileNamesDialog(self):
+    #     options = QFileDialog.Options()
+    #     options |= QFileDialog.DontUseNativeDialog
+    #     files, _ = QFileDialog.getOpenFileNames(self, "QFileDialog.getOpenFileNames()", "",
+    #                                             "All Files (*);;Python Files (*.py)", options=options)
+    #     if files:
+    #         print(files)
+    #
+    # def saveFileDialog(self):
+    #     options = QFileDialog.Options()
+    #     options |= QFileDialog.DontUseNativeDialog
+    #     fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "",
+    #                                               "All Files (*);;Text Files (*.txt)", options=options)
+    #     if fileName:
+    #         print(fileName)
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
