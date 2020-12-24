@@ -1,0 +1,158 @@
+
+
+
+
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPlainTextDocumentLayout, QWidget, QInputDialog, QLineEdit, QFileDialog
+import sys
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+from itertools import count
+import random
+import numpy as np
+from numpy.fft import fft,fftfreq,ifft
+import pandas as pd
+
+index = count()
+
+
+class MyWindow(QMainWindow):
+    def __init__(self):
+        super(MyWindow,self).__init__()
+        self.initUI()
+
+
+    def b1_clicked(self):
+        print("start")
+        if next(index)%2  == 0:
+            self.b1.setText("close")
+        else:
+            plt.close()
+            self.b1.setText("open")
+
+
+
+    def b2_clicked(self):
+        print("fft")
+        if next(index)%2  == 0:
+            print("fft")
+
+
+    def b3_clicked(self):
+        print("browse function")
+        self.open_dialog_box()
+        
+    
+    def b4_clicked(self,path):
+        print("stop function")
+        plt.style.use('seaborn')
+        data= pd.read_csv(path)
+        x = data['seconds'] 
+        y1 = data['uv'] 
+        plt.ion()
+        j=1
+        i=1
+        q=len(x)
+        w=[]
+        f=[]
+        while True:
+            plt.cla()
+            for i in range(q): 
+                # plt.gca().cla() # optionally clear axes
+                plt.cla()
+                w.append((x[i]))
+                f.append((y1[i]))
+                plt.plot(w,f)
+                line,= plt.plot(w,f)
+                plt.draw() 
+                plt.pause(0.1) 
+   
+    
+                plt.legend(handles = [line], 
+                labels  = ['1st signal']) 
+                plt.title('It is demo')
+                plt.tight_layout()
+                plt.show()
+    
+    def b5_clicked(self):
+        print("resume fuction")
+        
+        
+    
+    def b6_clicked(self):
+        print("zoom function")
+        
+        
+        
+        
+    
+
+    def open_dialog_box(self):
+        filename = QFileDialog.getOpenFileName()
+        path = filename[0]
+        print(path)
+        self.b4_clicked(path)
+
+
+        with open(path, "r") as f:
+            print(f.readline())
+          
+            
+            
+            
+            
+    def initUI(self):
+        self.setGeometry(200, 200, 300, 300)
+        self.setWindowTitle("signal viewer")
+
+
+        self.b1 = QtWidgets.QPushButton(self)
+        self.b1.move(0,10)
+        self.b1.setText("start the signal")
+        self.b1.clicked.connect(self.b1_clicked)
+
+
+        self.b2 = QtWidgets.QPushButton(self)
+        self.b2.move(0,60)
+        self.b2.setText("fourier transform")
+        self.b2.clicked.connect(self.b2_clicked)
+
+
+        self.b3 = QtWidgets.QPushButton(self)
+        self.b3.move(180,35)
+        self.b3.setText("Browse")
+        self.b3.clicked.connect(self.b3_clicked)
+        
+        
+        self.b4 = QtWidgets.QPushButton(self)
+        self.b4.move(0,90)
+        self.b4.setText("Stop")
+        self.b4.clicked.connect(self.b4_clicked)
+        
+        
+        self.b5 = QtWidgets.QPushButton(self)
+        self.b5.move(0,120)
+        self.b5.setText("Resume")
+        self.b5.clicked.connect(self.b4_clicked)
+        
+        self.b6 = QtWidgets.QPushButton(self)
+        self.b6.move(0,150)
+        self.b6.setText("Zoom")
+        self.b6.clicked.connect(self.b4_clicked)
+        
+        
+
+
+
+def window():
+    app = QApplication(sys.argv)
+    win = MyWindow()
+    win.show()
+    sys.exit(app.exec_())
+
+window()
+
+
+
+
+
